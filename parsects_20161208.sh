@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 
 #########################
 # Unzip all files begin #
@@ -125,21 +125,21 @@ newNCTSReport=0
 oldCTSREPORTDIR=0
 oldCTSRETESTREPORTDIR=0
 #echo "cts"
-	if [  -z "$FileName1" ] 
+	if [  -z "$FileName1" ]
 	then
 	    FileName1=$1
 		oldCTSREPORTDIR=$FileName1
 		oldCTSREPORTDIR=$(echo $oldCTSREPORTDIR | sed 's/\/t.*//')
 		oldCTSREPORTDIR=$oldCTSREPORTDIR"/"
-		echo "--------------->oldCTSREPORTDIR "  $oldCTSREPORTDIR		
+		echo "--------------->oldCTSREPORTDIR "  $oldCTSREPORTDIR
 	else
 	    FileName2=$1
 		oldCTSRETESTREPORTDIR=$FileName1
 		oldCTSRETESTREPORTDIR=$(echo $oldCTSRETESTREPORTDIR | sed 's/\/t.*//')
 		oldCTSRETESTREPORTDIR=$oldCTSRETESTREPORTDIR"/"
 		echo "--------------->oldCTSRETESTREPORTDIR "  $oldCTSRETESTREPORTDIR
-	fi	
-	#echo ""	
+	fi
+	#echo ""
 fi
 #cts 7.0
 if grep -qnri "suite_name=\"CTS"  "$1"
@@ -148,39 +148,39 @@ newNCTSReport=1
 newNCTSReportDir=0
 newNCTSRetestReportDir=0
 #echo "cts"
-	if [  -z "$FileName1" ] 
+	if [  -z "$FileName1" ]
 	then
 	    FileName1=$1
 		newNCTSReportDir=$FileName1
 		newNCTSReportDir=$(echo $newNCTSReportDir | sed 's/\/t.*//')
 		newNCTSReportDir=$newNCTSReportDir"/"
-		echo "--------------->newNCTSReportDir "  $newNCTSReportDir
+		echo "--------------->newNCTSReportDir "  $newNCTSReportDir  | tee -a $FILE
 	else
 	    FileName2=$1
 		newNCTSRetestReportDir=$FileName2
 		newNCTSRetestReportDir=$(echo $newNCTSRetestReportDir | sed 's/\/t.*//' )
 		newNCTSRetestReportDir=$newNCTSRetestReportDir"/"
-		echo "--------------->newNCTSRetestReportDir "  $newNCTSRetestReportDir
-	fi	
-	#echo ""	
+		echo "--------------->newNCTSRetestReportDir "  $newNCTSRetestReportDir   | tee -a $FILE
+	fi
+	#echo ""
 fi
 if grep -qnri "Xts version" "$1"
 then
 newNGTSReport=0
 oldGTSREPORTDIR=0
 #echo "Xts"
-	FileName3=$1	
+	FileName3=$1
 	oldGTSREPORTDIR=$FileName3
 	oldGTSREPORTDIR=$(echo $oldGTSREPORTDIR | sed 's/\/t.*//')
 	oldGTSREPORTDIR=$oldGTSREPORTDIR"/"
-	echo "--------------->oldGTSREPORTDIR "  $oldGTSREPORTDIR	
+	echo "--------------->oldGTSREPORTDIR "  $oldGTSREPORTDIR
 fi
 #gts 4.0
 if grep -qnri "suite_name=\"GTS" "$1"
 then
 newNGTSReport=1
 #echo "Xts"
-	FileName3=$1	
+	FileName3=$1
 	newNGTSReportDir=$FileName3
 	newNGTSReportDir=$(echo $newNGTSReportDir | sed 's/\/t.*//')
 	newNGTSReportDir=$newNGTSReportDir"/"
@@ -189,8 +189,8 @@ fi
 if grep -qnri "verifier-info" "$1"
 then
 #echo "verifier"
-	FileName4=$1		
-	#echo ""	
+	FileName4=$1
+	#echo ""
 fi
 
 }
@@ -258,7 +258,7 @@ CTS_VERIFIER_FINGERPRINT=""
 #for checking if its correct report
 CTSCHECK="<Cts version"
 GTSCHECK="Xts version"
-CTSVERIFIERCHECK="verifier-info" 
+CTSVERIFIERCHECK="verifier-info"
 CTS_Version=""
 GTS_Version=""
 CTSVERIFER_Version=""
@@ -320,7 +320,7 @@ if [  "$CTS_NOTEXECUTED" != "0" ]
 		echo "		This report has Not Executed test, retry again "					| tee -a $FILE
 fi
 checkfail="result=\"notExecuted"
-grep -ir "$checkfail" "$1"  | grep starttime |sed 's/.*<Test name=/	/' | sed 's/result.*//'					| tee -a $FILE 
+grep -ir "$checkfail" "$1"  | grep starttime |sed 's/.*<Test name=/	/' | sed 's/result.*//'					| tee -a $FILE
 
 echo ""																| tee -a $FILE
 
@@ -351,7 +351,7 @@ if [  "$CTS_RETEST_NOTEXECUTED" != "0" ]
 		echo "			This report has Not Executed test, retry again "					| tee -a $FILE
 fi
 checkfail="result=\"notExecuted"
-grep -ir "$checkfail" "$1"  | grep starttime |sed 's/.*<Test name=/		/' | sed 's/result.*//'					| tee -a $FILE 
+grep -ir "$checkfail" "$1"  | grep starttime |sed 's/.*<Test name=/		/' | sed 's/result.*//'					| tee -a $FILE
 RAN_TEST=$((CTS_RETEST_PASS+CTS_RETEST_FAILS))
 
 echo "	RAN_TEST    " $RAN_TEST					| tee -a $FILE
@@ -360,8 +360,8 @@ if [  "$TOTAL_RETEST" -ne "$RAN_TEST" ]
 		echo "		This report  Full and retest do not match retest again "					| tee -a $FILE
 fi
 echo ""																| tee -a $FILE
- 
- 
+
+
 CTS_VERIFIER_FINGERPRINT=""
 CHECKFINGERPRINT $CTS_RETEST_FINGERPRINT									| tee -a $FILE
 }
@@ -369,13 +369,13 @@ CHECKFINGERPRINT $CTS_RETEST_FINGERPRINT									| tee -a $FILE
 function GTS(){
 echo "*************************************GTS***********************************"						| tee -a $FILE
 GTSVERSION "$1"
-echo ""	
-CHECKCLIENTID "$1"																							| tee -a $FILE 
+echo ""
+CHECKCLIENTID "$1"																							| tee -a $FILE
 GMSVERSION "$1"
 GTSANDROIDFORORK "$1"
-CHECKSECURITYPATCH																				
-echo ""																									| tee -a $FILE 
-#COMPAREDEVICEID "$CTS_DEVICEID"  "$CTS_RETEST_DEVICEID" "$GTS_DEVICEID" 
+CHECKSECURITYPATCH
+echo ""																									| tee -a $FILE
+#COMPAREDEVICEID "$CTS_DEVICEID"  "$CTS_RETEST_DEVICEID" "$GTS_DEVICEID"
 FINGERPRINTS "$1"
 #AUTOHIDEAPP "$1"
 CHECKGMSESSENTIALAPPS "$1"
@@ -384,9 +384,9 @@ OPTIONALGMS "$1"
 GOOGLELIBRRIES "$1"
 echo " "																								| tee -a $FILE
 MTKlogger "$1"
-echo " "																								| tee -a $FILE				
+echo " "																								| tee -a $FILE
 GTS_RESULT $1
-	 
+
 CTS_VERIFIER_FINGERPRINT=""
 CHECKFINGERPRINT $GTS_FINGERPRINT									| tee -a $FILE
 }
@@ -398,8 +398,8 @@ locationGTS_N="./"$newNGTSReportDir"/PropertyDeviceInfo.deviceinfo.json"
 
 
 if [ $newNGTSReport -ne 0 ]
-then	
-	
+then
+
 		GTS_FINGERPRINT=$(sed ':a;N;$!ba;s/\",\n/ /g' $locationGTS_N | grep  "ro.build.fingerprint"  | sed 's/.*\"value\": \"//' | sed 's/\"//' )
 		echo "Fingerprint :  "  $GTS_FINGERPRINT | tee -a $FILE
 	else
@@ -407,19 +407,19 @@ then
 		echo "Fingerprint :  "  $GTS_FINGERPRINT | tee -a $FILE
 fi
 CHECKFINGERPRINT $GTS_FINGERPRINT
-	
+
 }
 
 
 function GTSVERSION(){
 echo " "																								| tee -a $FILE
 if [ $newNGTSReport -ne 0 ]
-then 
-	locationGTS_N=$newNGTSReportDir 
+then
+	locationGTS_N=$newNGTSReportDir
 	grep --exclude "*.log" -ir "suite_name=\"GTS" $locationGTS_N  |sed 's/.*suite_version=\"/GTS suite version=/'|sed 's/.*<//' | sed 's/\".*//' | tee -a $FILE
 
 else
-	grep --exclude "*.log" -ir "Xts version" "$1" |sed 's/.*<//' | sed 's/\"//' | sed 's/\".*//'  							| tee -a $FILE 
+	grep --exclude "*.log" -ir "Xts version" "$1" |sed 's/.*<//' | sed 's/\"//' | sed 's/\".*//'  							| tee -a $FILE
 fi
 
 }
@@ -427,12 +427,12 @@ function GTS_RESULT(){
 
 
 	if [ $newNGTSReport -ne 0 ]
-	then 
+	then
 			echo " "																								| tee -a $FILE
 			echo  "GTS FAILS:"																						| tee -a $FILE
 #		<Test result="fail" name="testWidgetPresence">
 		checkfail="result=\"fail"
-		grep -ir "$checkfail" "$1"  		|sed 's/.*name=\"/	/'	| sed 's/\".*//'			| tee -a $FILE  
+		grep -ir "$checkfail" "$1"  		|sed 's/.*name=\"/	/'	| sed 's/\".*//'			| tee -a $FILE
 #		 <Summary pass="632" failed="10" not_executed="0" modules_done="60" modules_total="60" />
 			GTS_FAILS=$(grep -ir "<Summary pass=\"" "$1"  |sed 's/.*failed="//'|  sed 's/\".*//')
 			GTS_PASS=$(grep -ir "<Summary pass=\"" "$1"  |sed 's/.*pass="//'|  sed 's/\".*//')
@@ -441,13 +441,13 @@ function GTS_RESULT(){
 			echo ""
 			echo "Pass : " $GTS_PASS										| tee -a $FILE
 			echo "Fails : "$GTS_FAILS									| tee -a $FILE
-			echo "Not Executed : "$GTS_NOTEXECUTED						| tee -a $FILE	
+			echo "Not Executed : "$GTS_NOTEXECUTED						| tee -a $FILE
 			grep -rniq "notExecuted\"" "$1"	| sed 's/.*<Test name="/	/' |  sed s/\".*// 		  | tee -a $FILE
-	else	
+	else
 			echo " "																								| tee -a $FILE
 			echo  "GTS FAILS:"																						| tee -a $FILE
 			checkfail="result=\"fail"
-			grep -ir "$checkfail" "$1"  | grep starttime |sed 's/.*<Test name=/	/' | sed 's/result.*//'					| tee -a $FILE 
+			grep -ir "$checkfail" "$1"  | grep starttime |sed 's/.*<Test name=/	/' | sed 's/result.*//'					| tee -a $FILE
 			GTS_FAILS=$(grep -ir "<Summary failed=\"" "$1"  |sed 's/.*<Summary failed="//'|  sed 's/\".*//')
 			GTS_PASS=$(grep -ir "pass=\"" "$1"  |sed 's/.*pass="//'|  sed 's/\".*//')
 			GTS_NOTEXECUTED=$(grep -ir "notExecuted=\"" "$1"  |sed 's/.*notExecuted="//'|  sed 's/\".*//')
@@ -455,7 +455,7 @@ function GTS_RESULT(){
 			echo ""
 			echo "Pass : " $GTS_PASS										| tee -a $FILE
 			echo "Fails : "$GTS_FAILS									| tee -a $FILE
-			echo "Not Executed : "$GTS_NOTEXECUTED						| tee -a $FILE	
+			echo "Not Executed : "$GTS_NOTEXECUTED						| tee -a $FILE
 			grep -rniq "notExecuted\"" "$1"	| sed 's/.*<Test name="/	/' |  sed s/\".*// 		  | tee -a $FILE
 	fi
 
@@ -471,10 +471,10 @@ echo "****************************Verifier ****************************" 							
 
 grep -ir "version-name" "$1"  |sed 's/\ <verifier-info//' |  sed 's/\"//' |sed 's/\" v.*//' | sed 's/\ //' | sed 's/\ //'			| tee -a $FILE
 
-BYOD="BYOD test  present"	
-if grep -wqri "BYOD" "$1"  
-	
-		then 
+BYOD="BYOD test  present"
+if grep -wqri "BYOD" "$1"
+
+		then
 			echo $BYOD"			YES"												| tee -a $FILE
 		else
 			echo $BYOD"			NO"												| tee -a $FILE
@@ -499,18 +499,18 @@ searchfor=$package$androidforwork_package$flag
 output="Contain android for WorK"
 
 if [ $newNGTSReport -ne 0 ]
-then 
+then
 	locationGTS_N=$newNGTSReportDir"PackageDeviceInfo.deviceinfo.json"
-	if grep -wqri $searchfor $1  
-	then 
+	if grep -wqri $searchfor $1
+	then
 			echo  $output "		YES"												| tee -a $FILE
 	else
 			echo  $output "		NO"													| tee -a $FILE
 	fi
 
 else
-	if grep -wqri $searchfor "$1"  
-	then 
+	if grep -wqri $searchfor "$1"
+	then
 			echo  $output "		YES"												| tee -a $FILE
 	else
 			echo  $output "		NO"													| tee -a $FILE
@@ -523,29 +523,29 @@ echo " "																								| tee -a $FILE
 
 function CHECKCLIENTID(){
 
-echo "-----------------------------------------"														| tee -a $FILE 
-echo "CLIENTID : "																						| tee -a $FILE 
-															 
+echo "-----------------------------------------"														| tee -a $FILE
+echo "CLIENTID : "																						| tee -a $FILE
+
 if [ $newNGTSReport -ne 0 ]
-then 
+then
 		locationGTS_N="./"$newNGTSReportDir"/PropertyDeviceInfo.deviceinfo.json"
 
 		CLIENTID=$(sed ':a;N;$!ba;s/\",\n/ /g' $locationGTS_N | grep "ro.com.google.clientidbase " | sed 's/.*value\": \"//' | sed 's/\"//' )
 		echo $CLIENTID
 		sed ':a;N;$!ba;s/\",\n/ /g' $locationGTS_N | grep -iw "ro.com.google.clientidbase"  | sed 's/.*name\": \"ro/ro/' | sed 's/value\": \"/	:/' | sed 's/\"//' | sed 's/\"//'	| tee -a $FILE
-		if  grep  -q $CLIENTID /data/web/script/clientid.txt	  ; then  
+		if  grep  -q $CLIENTID /data/web/script/clientid.txt	  ; then
 			echo "CLIENT ID  FOUND : " "$1"												| tee -a $FILE
 			grep $CLIENTID /data/web/script/clientid.txt												| tee -a $FILE
 		else
 			echo "CLIENT ID NOT FOUND : "	"$1"										| tee -a $FILE
 			grep $CLIENTID /data/web/script/clientid.txt										| tee -a $FILE
-		fi 
- 
-else	
+		fi
+
+else
 		grep -iw "ro.com.google.clientidbase" "$1"   |sed 's/.*ro.com.google.//' | sed 's/\"\ value//' | sed 's/\"//' |sed 's/\".*//'			| tee -a $FILE
 		CLIENTID=$(grep -ir "ro.com.google.clientidbase\"" "$1"   |sed 's/.*value=\"//' | sed 's/\"//' |sed 's/\".*//' | sed 's/\/.*//')
-		if  grep -wqri "$1" /data/web/script/clientid.txt 
-		then 
+		if  grep -wqri "$1" /data/web/script/clientid.txt
+		then
 			echo "CLIENT ID NOT FOUND : " "$1"												| tee -a $FILE
 		else
 			echo "CLIENT ID  FOUND : "	"$1"										| tee -a $FILE
@@ -573,7 +573,7 @@ then
 	#list root process
 	echo " "																									| tee -a $FILE
 	echo "Root Process:"									    					| tee -a $FILE
-	grep -ir "<Process name=\"" "$1"  | sed 's/.*<Process name=\"/	/'  |   sed 's/\".*/	/'  					| tee -a $FILE 
+	grep -ir "<Process name=\"" "$1"  | sed 's/.*<Process name=\"/	/'  |   sed 's/\".*/	/'  					| tee -a $FILE
 
 	#check contains com.google.widevine.software.drm. GMS devices must contain
 	echo " "																								| tee -a $FILE
@@ -581,37 +581,37 @@ then
 	grep -ir "com.google.widevine.software.drm" "$1"  |sed 's/.*<Library name=\"/	/'  |   sed 's/\".*/	   /'   		| tee -a $FILE
 
 	#check data partition
-	echo " "																								| tee -a $FILE																
-	echo "Data Partition:"														| tee -a $FILE																							
+	echo " "																								| tee -a $FILE
+	echo "Data Partition:"														| tee -a $FILE
 	grep -ir ";/data" "$1" | sed 's/.*;\/data/	/' | sed 's/;.*/	 /' 							| tee -a $FILE
 
 	#check low ram
 	echo " "																								| tee -a $FILE
-	echo "Is device low ram:"														| tee -a $FILE									
+	echo "Is device low ram:"														| tee -a $FILE
 	grep -ir "<MemoryInfo is_low_ram_device" "$1" | sed 's/<MemoryInfo is_low_ram_device=\"/ /' |   sed 's/\".*/	/' 							| tee -a $FILE
 
 	#check if fail testEncryption. 6.0  must pass in full and all retest report
 	echo " "																								| tee -a $FILE
 	echo "Encryption Fails if item displayed below:"														| tee -a $FILE
-	grep -ir "name=\"testEncryption\" result=\"fai" "$1"  |sed 's/.*<Test name="/	/' |  sed s/\".*// 							| tee -a $FILE	
+	grep -ir "name=\"testEncryption\" result=\"fai" "$1"  |sed 's/.*<Test name="/	/' |  sed s/\".*// 							| tee -a $FILE
 
 
-	echo " "																								| tee -a $FILE	
+	echo " "																								| tee -a $FILE
 	echo "      CHECK HERE FOR BYOD"																								| tee -a $FILE
-	ManagedFeature="Managed user feature present"	
+	ManagedFeature="Managed user feature present"
 	managedUsers=$(grep -ir "android.software.managed_users" "$1"  | sed 's/.*available="//'|  sed 's/\".*//')
 	#grep -ir "android.software.managed_users" "$3"  | sed 's/.*available="//'|  sed 's/\".*//'    | tee -a $FILE
 	echo $ManagedFeature "=" $managedUsers													| tee -a $FILE
 	storage_devices="storage_devices"
 	emulated=$(grep -ir "$storage_devices" "$1"  | sed 's/.*storage_devices="//'|  sed 's/\".*//')
-	echo $storage_devices "=" $emulated                                 								| tee -a $FILE	
+	echo $storage_devices "=" $emulated                                 								| tee -a $FILE
 
 
 
 	#list failures
 	echo " "																								| tee -a $FILE
 	echo "CTS Fails :"														| tee -a $FILE
-	grep -ir "result=\"fail" "$1" |  sed 's/.* name=\"/	/'  | sed 's/\".*/	/'  | tee -a $FILE	
+	grep -ir "result=\"fail" "$1" |  sed 's/.* name=\"/	/'  | sed 's/\".*/	/'  | tee -a $FILE
 	echo " "
 
 
@@ -628,7 +628,7 @@ echo " "																								| tee -a $FILE
 	#list root process
 	echo " "																									| tee -a $FILE
 	echo "Root Process:"									    					| tee -a $FILE
-	grep -ir "<Process name=\"" "$1"  | sed 's/.*<Process name=\"/	/'  |   sed 's/\".*/	/'  					| tee -a $FILE 
+	grep -ir "<Process name=\"" "$1"  | sed 's/.*<Process name=\"/	/'  |   sed 's/\".*/	/'  					| tee -a $FILE
 
 	#check contains com.google.widevine.software.drm. GMS devices must contain
 	echo " "																								| tee -a $FILE
@@ -636,60 +636,60 @@ echo " "																								| tee -a $FILE
 	grep -ir "com.google.widevine.software.drm" "$1"  |sed 's/.*<Library name=\"/	/'  |   sed 's/\".*/	   /'   		| tee -a $FILE
 
 	#check data partition
-	echo " "																								| tee -a $FILE																
-	echo "Data Partition:"														| tee -a $FILE																							
+	echo " "																								| tee -a $FILE
+	echo "Data Partition:"														| tee -a $FILE
 	grep -ir ";/data" "$1" | sed 's/.*;\/data/	/' | sed 's/;.*/	 /' 							| tee -a $FILE
 
 	#check low ram
 	echo " "																								| tee -a $FILE
-	echo "Is device low ram:"														| tee -a $FILE									
+	echo "Is device low ram:"														| tee -a $FILE
 	grep -ir "<MemoryInfo is_low_ram_device" "$1" | sed 's/<MemoryInfo is_low_ram_device=\"/ /' |   sed 's/\".*/	/' 							| tee -a $FILE
 
 	#check if fail testEncryption. 6.0  must pass in full and all retest report
 	echo " "																								| tee -a $FILE
 	echo "Encryption Fails if item displayed below:"														| tee -a $FILE
-	grep -ir "name=\"testEncryption\" result=\"fai" "$1"  |sed 's/.*<Test name="/	/' |  sed s/\".*// 							| tee -a $FILE	
+	grep -ir "name=\"testEncryption\" result=\"fai" "$1"  |sed 's/.*<Test name="/	/' |  sed s/\".*// 							| tee -a $FILE
 
 
-	echo " "																								| tee -a $FILE	
+	echo " "																								| tee -a $FILE
 	echo "      CHECK HERE FOR BYOD"																								| tee -a $FILE
-	ManagedFeature="Managed user feature present"	
+	ManagedFeature="Managed user feature present"
 	managedUsers=$(grep -ir "android.software.managed_users" "$1"  | sed 's/.*available="//'|  sed 's/\".*//')
 	#grep -ir "android.software.managed_users" "$3"  | sed 's/.*available="//'|  sed 's/\".*//'    | tee -a $FILE
 	echo $ManagedFeature "=" $managedUsers													| tee -a $FILE
 	storage_devices="storage_devices"
 	emulated=$(grep -ir "$storage_devices" "$1"  | sed 's/.*storage_devices="//'|  sed 's/\".*//')
-	echo $storage_devices "=" $emulated                                 								| tee -a $FILE	
+	echo $storage_devices "=" $emulated                                 								| tee -a $FILE
 
 
 
 	#list failures
 	echo " "																								| tee -a $FILE
 	echo "CTS Fails :"														| tee -a $FILE
-	grep -ir "result=\"fai" "$1"  |sed 's/.*<Test name="/	/' |  sed s/\".*// 							| tee -a $FILE	
+	grep -ir "result=\"fai" "$1"  |sed 's/.*<Test name="/	/' |  sed s/\".*// 							| tee -a $FILE
 	echo " "																								| tee -a $FILE
-	
+
 
 fi
 
 
-	
+
 }
 
 function CHECKSECURITYPATCH(){
 
- 
+
 locationGTS_N=$newNGTSReportDir"GenericDeviceInfo.deviceinfo.json"
 path=$(grep --include "*.xml" -rni "xts_result.xsl" | sed 's/\/xts.*//' )
 path=$path"/""GenericDeviceInfo.deviceinfo.json"
 
 if [ $newNGTSReport -ne 0 ]
-	then 
-		securityPatch=$(grep -m 1 -i  "\"build_version_security_patch\"" $locationGTS_N | head -1 |sed s/.*'\"build_version_security_patch\"'// |  sed s/\:// |sed s/\"// | sed s/\"//  )    
+	then
+		securityPatch=$(grep -m 1 -i  "\"build_version_security_patch\"" $locationGTS_N | head -1 |sed s/.*'\"build_version_security_patch\"'// |  sed s/\:// |sed s/\"// | sed s/\"//  )
 		echo "Security Patch Version" $securityPatch                                                  | tee -a $FILE
 		checkDate=$(grep -m 1 -i  "\"build_version_security_patch\"" $locationGTS_N | head -1 |sed s/.*'\"build_version_security_patch\"'// |  sed s/\:// |sed s/\"// | sed s/\"// |  head -c-4 )
 		#echo "Security Patch Version short" $checkDate
-		todayDate=$(date +"%Y-%m") 
+		todayDate=$(date +"%Y-%m")
 		#echo "todayDate" $todayDate
 		expectedYear=$(echo  ${todayDate:0:4})
 		expectedMonth=$(echo  ${todayDate:5:2})
@@ -703,12 +703,12 @@ if [ $newNGTSReport -ne 0 ]
 		reportedMonthFirstDigit=$(echo  ${checkDate:6:1})
 		reportedMonthSecondDigit=$(echo  ${checkDate:7:1})
 		reportedMonth=""
-		if [ "$expectedMonthFirstDigit" -eq 0 ];then 
+		if [ "$expectedMonthFirstDigit" -eq 0 ];then
 			expectedMonth=$(($expectedMonthSecondDigit-1))
 			expectedMonth="0"$expectedMonth
 		fi
 
-		if [ $reportedMonthFirstDigit -le 0 ];then 
+		if [ $reportedMonthFirstDigit -le 0 ];then
 			reportedMonth=$reportedMonthSecondDigit
 			echo "reportedMonthFirstDigit" $reportedMonthFirstDigit
 			echo "reportedMonthSecondDigit" $reportedMonthSecondDigit
@@ -731,7 +731,7 @@ if [ $newNGTSReport -ne 0 ]
 
 		monthDifference=$((expectedMonth-reportedMonth))
 		echo "monthDifference" $monthDifference
-		if [ $monthDifference -ge 2 ];then	
+		if [ $monthDifference -ge 2 ];then
 
 			echo "expectedMonth" $expectedMonth
 			echo "reportYear" $reportYear
@@ -739,7 +739,7 @@ if [ $newNGTSReport -ne 0 ]
 			echo "Security Patch NOT Acceptable,minum version requires is "$expectedYear-$expectedMonth						| tee -a $FILE
 		else
 				echo "Security Patch Acceptable"				| tee -a $FILE
-		fi 
+		fi
 
 		echo "expectedYear" $expectedYear
 		echo "expectedMonth" $expectedMonth
@@ -749,15 +749,15 @@ if [ $newNGTSReport -ne 0 ]
 		echo "expectedMonthSecondDigit" $expectedMonthSecondDigit
 		echo "reportedMonthFirstDigit" $reportedMonthFirstDigit
 		echo "reportedMonthSecondDigit" $reportedMonthSecondDigit
-		echo "reportedMonth" $reportedMonth	
-	
-	
+		echo "reportedMonth" $reportedMonth
+
+
 	else
-		securityPatch=$(grep -m 1 -i  "\"build_version_security_patch\"" $path   )    
+		securityPatch=$(grep -m 1 -i  "\"build_version_security_patch\"" $path   )
 		echo "Security Patch Version" $securityPatch                                                  | tee -a $FILE
 		checkDate=$(grep -m 1 -i  "\"build_version_security_patch\"" $path | head -1 |sed s/.*'\"build_version_security_patch\"'// |  sed s/\:// |sed s/\"// | sed s/\"// |  head -c-4 )
 		#echo "Security Patch Version short" $checkDate
-		todayDate=$(date +"%Y-%m") 
+		todayDate=$(date +"%Y-%m")
 		#echo "todayDate" $todayDate
 		expectedYear=$(echo  ${todayDate:0:4})
 		expectedMonth=$(echo  ${todayDate:5:2})
@@ -771,12 +771,12 @@ if [ $newNGTSReport -ne 0 ]
 		reportedMonthFirstDigit=$(echo  ${checkDate:6:1})
 		reportedMonthSecondDigit=$(echo  ${checkDate:7:1})
 		reportedMonth=""
-		if [ "$expectedMonthFirstDigit" -eq 0 ];then 
+		if [ "$expectedMonthFirstDigit" -eq 0 ];then
 			expectedMonth=$(($expectedMonthSecondDigit-1))
 			expectedMonth="0"$expectedMonth
 		fi
 
-		if [ $reportedMonthFirstDigit -le 0 ];then 
+		if [ $reportedMonthFirstDigit -le 0 ];then
 			reportedMonth=$reportedMonthSecondDigit
 			echo "reportedMonthFirstDigit" $reportedMonthFirstDigit
 			echo "reportedMonthSecondDigit" $reportedMonthSecondDigit
@@ -799,7 +799,7 @@ if [ $newNGTSReport -ne 0 ]
 
 		monthDifference=$((expectedMonth-reportedMonth))
 		echo "monthDifference" $monthDifference
-		if [ $monthDifference -ge 2 ];then	
+		if [ $monthDifference -ge 2 ];then
 
 			echo "expectedMonth" $expectedMonth
 			echo "reportYear" $reportYear
@@ -807,7 +807,7 @@ if [ $newNGTSReport -ne 0 ]
 			echo "Security Patch NOT Acceptable,minum version requires is "$expectedYear-$expectedMonth						| tee -a $FILE
 		else
 				echo "Security Patch Acceptable"				| tee -a $FILE
-		fi 
+		fi
 
 		echo "expectedYear" $expectedYear
 		echo "expectedMonth" $expectedMonth
@@ -818,14 +818,14 @@ if [ $newNGTSReport -ne 0 ]
 		echo "reportedMonthFirstDigit" $reportedMonthFirstDigit
 		echo "reportedMonthSecondDigit" $reportedMonthSecondDigit
 		echo "reportedMonth" $reportedMonth
-	
-fi	
+
+fi
 
 }
 
 function AUTOHIDEAPP(){
 grep  -r "ro.com.google.apphider"
-#if grep -q "ro.com.google.apphider=off" $1;then 
+#if grep -q "ro.com.google.apphider=off" $1;then
 #   echo "AUTOHIDEAPP ON"		| tee -a $FILE
 #else
 #   echo "AUTOHIDEAPP OFF" 		| tee -a $FILE
@@ -837,7 +837,7 @@ function GMSVERSION(){
 locationGTS_N=$newNGTSReportDir"PropertyDeviceInfo.deviceinfo.json"
 
 	if [ $newNGTSReport -ne 0 ]
-	then 
+	then
 		sed ':a;N;$!ba;s/\",\n/ /g' $locationGTS_N | grep "ro.com.google.gmsversion"  | sed 's/.*ro.com.google.gmsversion/ro.com.google.gmsversion/' | sed 's/\"value\": \"/:/' | sed 's/\"//'	| tee -a $FILE
 	else
 		grep -ir "gmsversion" "$1"  |sed 's/.*ro.com.google.//'   |sed 's/\" value//' | sed 's/\"//' |sed 's/\".*//'			| tee -a $FILE
@@ -849,24 +849,24 @@ function MTKlogger(){
 locationGTS_N=$newNGTSReportDir"PackageDeviceInfo.deviceinfo.json"
 
 	if [ $newNGTSReport -ne 0 ]
-	then 
+	then
 		if grep -qri -q "com.mediatek.mtklogger"  $locationGTS_N
-		then 
+		then
 				echo "MTK Logger is preloaded"		| tee -a $FILE
 			else
 			   echo "MTK Logger is not preloaded" 		| tee -a $FILE
 		fi
 	else
 			echo " "		| tee -a $FILE
-			echo "------------------------------------------------------------------------------------------ "		| tee -a $FILE   
-			if grep -q "com.mediatek.mtklogger" $1;then 
+			echo "------------------------------------------------------------------------------------------ "		| tee -a $FILE
+			if grep -q "com.mediatek.mtklogger" $1;then
 			   echo "MTK Logger is preloaded"		| tee -a $FILE
 			else
 			   echo "MTK Logger is not preloaded" 		| tee -a $FILE
 			fi
-			echo "------------------------------------------------------------------------------------------ "		| tee -a $FILE 
+			echo "------------------------------------------------------------------------------------------ "		| tee -a $FILE
 			 echo " "		| tee -a $FILE
-		
+
 	fi
 
 
@@ -883,18 +883,18 @@ full="$1"
 retest="$2"
 gts="$3"
 
-												
+
 if [ "$retest" == "" ]; then
 	retest="$1"
-	fi												
-if [ "$full" == "$retest" ]; then 
-	if [ "$retest" == "$gts" ]; then 
+	fi
+if [ "$full" == "$retest" ]; then
+	if [ "$retest" == "$gts" ]; then
 		echo "	SAME DEVICE ID"												|  tee -a $FILE
 	else
 		echo "	DIFFERENT DEVICE ID"									| tee -a $FILE
 	fi
 else
-	echo "	DIFFERENT DEVICE ID"										| tee -a $FILE 
+	echo "	DIFFERENT DEVICE ID"										| tee -a $FILE
 fi
 
 }
@@ -908,7 +908,7 @@ full="$1"
 retest="$2"
 gts="$3"
 verfier="$4"
-echo 
+echo
 echo " DEVICE FINGERPRINT "													| tee -a $FILE
 if [ "$retest" == "" ]; then
 	retest="$1"
@@ -921,11 +921,11 @@ if  [ "$full" == "$retest" ]; then
 		else
 			echo " DIFFERENT FINGERPRINT"										| tee -a $FILE
 		fi
-	else 
+	else
 		echo " DIFFERENT FINGERPRINT"											| tee -a $FILE
 	fi
 else
-	echo " DIFFERENT FINGERPRINT"												| tee -a $FILE 
+	echo " DIFFERENT FINGERPRINT"												| tee -a $FILE
 fi
 #acme/myproduct/mydevice:6.0/LMYXX/3359:userdebug/test-keys
 
@@ -973,8 +973,8 @@ function CHECKCORRECTREPORT(){
 
 if  grep -qnri "$1" "$2"
 then
-	echo ""	
-else	
+	echo ""
+else
 	if [ "$1" = "<Cts version" ]
 	then
 		echo "NOT A CTS REPORT"												| tee -a $FILE
@@ -984,7 +984,7 @@ else
 		echo "NOT A GTS REPORT"												| tee -a $FILE
 		exit
 	elif [ "$1" = "verifier-info" ]
-	then 
+	then
 		echo "NOT A Verifier REPORT"											| tee -a $FILE
 		exit
 	fi
@@ -1021,25 +1021,25 @@ searchfor=$package$i$flag
 
 	locationGTS_N=$newNGTSReportDir"PackageDeviceInfo.deviceinfo.json"
 	if [ $newNGTSReport -ne 0 ]
-	then 
+	then
 		if grep -qri $i  $locationGTS_N
-		then 
+		then
 			echo -ne ""																			| tee -a $FILE
-		else 
+		else
 			echo "	GMS ESSENTIAL package not found  new : $i"										| tee -a $FILE
 			contains_all_essential=false
 		fi
 	else
 		if grep -qri $searchfor $tempFile  && sed   -i '/'$searchfor'/d' "$tempFile"
-		then 
+		then
 			echo -ne ""																			| tee -a $FILE
-		else 
+		else
 			echo "	GMS ESSENTIAL package not found  old : $i"										| tee -a $FILE
 			contains_all_essential=false
 		fi
 	fi
 
-	
+
 done
 
 if $contains_all_essential != "false"
@@ -1049,9 +1049,9 @@ else
 	echo "	GSM ESSENTIALS missing"  															| tee -a $FILE
 fi
 #if grep -qri "com.google.android." "$1" && grep -qrni "flag_system" "$1"
-#then	
+#then
 #	grep -qri "com.google.android." "$1" | sed 's/*com./	com./' |sed 's/\" flag_sys.*/	/'
-#else 
+#else
 #	echo -e ""
 #fi
 
@@ -1089,32 +1089,32 @@ for i in ${MUST[*]}
 do
 searchfor=$package$i$flag
 
-	
+
 
 locationGTS_N=$newNGTSReportDir"PackageDeviceInfo.deviceinfo.json"
 	if [ $newNGTSReport -ne 0 ]
-	then 
+	then
 		if grep -qri $i  $locationGTS_N
-		then 
+		then
 			echo -ne ""																			| tee -a $FILE
-		else 
+		else
 			echo "	GMS MUST package not found  : $i"										| tee -a $FILE
 			contains_all_must=false
 		fi
 	else
 		if grep -qri $searchfor $tempFile  && sed   -i '/'$searchfor'/d' "$tempFile"
-		then 
+		then
 			echo -ne ""																			| tee -a $FILE
-		else 
+		else
 			echo "	GMS MUST package not found  : $i"										| tee -a $FILE
 			contains_all_must=false
 		fi
 	fi
 done
 if $contains_all_must != false
-then	
-	echo "	Contains all GMS MUST"														| tee -a $FILE														
-else 
+then
+	echo "	Contains all GMS MUST"														| tee -a $FILE
+else
 echo "	MUST GMS missing"  																| tee -a $FILE
 fi
 
@@ -1140,25 +1140,25 @@ for i in ${LIBRARIES[*]}
 do
 searchfor=$package$i$flag
 
-	
-	
+
+
 	locationGTS_N=$newNGTSReportDir"LibraryDetailDeviceInfo.deviceinfo.json"
 	if [ $newNGTSReport -ne 0 ]
-	then 
+	then
 		if grep --include "*.json" -qri $i  $locationGTS_N
-		then 
+		then
 			echo "	GMS Library package  found  : $i"										| tee -a $FILE
-		else 
+		else
 			echo -ne ""
 		fi
 	else
 		if grep -wqri $searchfor $tempFile  && sed   -i '/'$searchfor'/d' "$tempFile"
-	
-		then 
+
+		then
 			echo "	GMS Library package  found  : $i"																	| tee -a $FILE
-		else 
+		else
 			echo -ne ""											| tee -a $FILE
-			
+
 		fi
 	fi
 
@@ -1169,7 +1169,7 @@ done
 }
 
 function OPTIONALGMS(){
-echo ""			
+echo ""
 
 OPTIONAL=(com.google.android.calendar
 com.google.android.apps.plus
@@ -1202,7 +1202,7 @@ com.google.earth
 com.google.android.street
 com.google.android.apps.googlevoice
 com.google.android.ears)
-																
+
 contains_optional=true
 echo "CHECKING GMS OPTIONAL APPS"														| tee -a $FILE
 echo "	Please check geovailability for play apps ( movies, books)"						| tee -a $FILE
@@ -1217,19 +1217,19 @@ do
 searchfor=$package$i$flag
 
 	if [ $newNGTSReport -ne 0 ]
-	then 
+	then
 		if grep -qri $i  $locationGTS_N
-		then 
+		then
 			echo "	GMS OPTIONAL package  found  : $i"										| tee -a $FILE
 		fi
 	else
 		if grep -wqri $searchfor $tempFile  && sed   -i '/'$searchfor'/d' "$tempFile"
-	
-		then 
+
+		then
 			echo "	GMS OPTIONAL package  found  : $i"										| tee -a $FILE
-		
+
 	fi
-		
+
 	fi
 done
 
@@ -1240,47 +1240,81 @@ function containsAndroidForWork(){
 #nned gts and verifier reports
 package="name=\""
 flag="\""
+output="Contain android for WorK"
+BYOD="BYOD test  present"
+ManagedFeature="Managed user feature present"
+storage_devices="storage_devices"
 echo " "																								| tee -a $FILE
 echo "****************************android for work ****************************" 							| tee -a $FILE
 
-androidforwork_pacage=com.google.android.androidforwork
-searchfor=$package$androidforwork_pacage$flag
-output="Contain android for WorK"
-BYOD="BYOD test  present"	
-ManagedFeature="Managed user feature present"	
-storage_devices="storage_devices"
-if grep -wqri $searchfor "$1"  
-	
-		then 
-			echo  $output "		YES"												| tee -a $FILE
-		else
-			echo  $output "		NO"										| tee -a $FILE
-		
-fi
-if grep -wqri "BYOD" "$2"  
-	
-		then 
-			echo $BYOD"			YES"												| tee -a $FILE
-		else
-			echo $BYOD"			NO"												| tee -a $FILE
-fi
+  if [ $newNGTSReport -ne 0 ]
+  then
+    if grep -wqri "BYOD" "$2"
 
-managedUsers=$(grep -ir "android.software.managed_users" "$3"  | sed 's/.*available="//'|  sed 's/\".*//')
+    		then
+    			echo $BYOD"			YES"												| tee -a $FILE
+    		else
+    			echo $BYOD"			NO"												| tee -a $FILE
+    fi
+
+    managedUserReport=$newNCTSReportDir"FeatureDeviceInfo.deviceinfo.json"
+    echo "MANAGED  :"$managedUserReport | tee -a $FILE
+
+    managedUsers=$(sed ':a;N;$!ba;s/\",\n/ /g' $managedUserReport | grep "android.software.managed_users " )
 #grep -ir "android.software.managed_users" "$3"  | sed 's/.*available="//'|  sed 's/\".*//'    | tee -a $FILE
-echo $ManagedFeature "=" $managedUsers													| tee -a $FILE
-#if [ "$managedUsers"="true true" ]
-#	
-#		then 
-#			echo $ManagedFeature"	        YES"												| tee -a $FILE
-#		else
-#			echo $ManagedFeature"	        NO"												| tee -a $FILE
-#fi
+    echo $ManagedFeature "=" $managedUsers													| tee -a $FILE
+    #if [ "$managedUsers"="true true" ]
+    #
+    #		then
+    #			echo $ManagedFeature"	        YES"												| tee -a $FILE
+    #		else
+    #			echo $ManagedFeature"	        NO"												| tee -a $FILE
+    #fi
 
 
 
-emulated=$(grep -ir "$storage_devices" "$3"  | sed 's/.*storage_devices="//'|  sed 's/\".*//')
-echo $storage_devices "=" $emulated                                 								| tee -a $FILE
-		
+    emulated=$(grep -ir "$storage_devices" "$3"  | sed 's/.*storage_devices="//'|  sed 's/\".*//')
+    echo $storage_devices "=" $emulated                                 								| tee -a $FILE
+
+
+
+  else
+    androidforwork_pacage=com.google.android.androidforwork
+    searchfor=$package$androidforwork_pacage$flag
+
+    if grep -wqri $searchfor "$1"
+
+    		then
+    			echo  $output "		YES"												| tee -a $FILE
+    		else
+    			echo  $output "		NO"										| tee -a $FILE
+
+    fi
+    if grep -wqri "BYOD" "$2"
+
+    		then
+    			echo $BYOD"			YES"												| tee -a $FILE
+    		else
+    			echo $BYOD"			NO"												| tee -a $FILE
+    fi
+
+    managedUsers=$(grep -ir "android.software.managed_users" "$3"  | sed 's/.*available="//'|  sed 's/\".*//')
+    #grep -ir "android.software.managed_users" "$3"  | sed 's/.*available="//'|  sed 's/\".*//'    | tee -a $FILE
+    echo $ManagedFeature "=" $managedUsers													| tee -a $FILE
+    #if [ "$managedUsers"="true true" ]
+    #
+    #		then
+    #			echo $ManagedFeature"	        YES"												| tee -a $FILE
+    #		else
+    #			echo $ManagedFeature"	        NO"												| tee -a $FILE
+    #fi
+
+
+
+    emulated=$(grep -ir "$storage_devices" "$3"  | sed 's/.*storage_devices="//'|  sed 's/\".*//')
+    echo $storage_devices "=" $emulated                                 								| tee -a $FILE
+
+  fi
 }
 
 CHECKGTS=1
@@ -1295,26 +1329,26 @@ tempFile="temp.temp1"
 CHECKCORRECTREPORT  "$FileName1"
 
 if ["$FileName2" = ""]
-then 
+then
 
 CHECKCORRECTREPORT  "$FileName1"
-else	
+else
 
 CHECKCORRECTREPORT  "$FileName2"
 fi
 
-#if no GTS report we set CHECKGTS to 0 else stay at 1 
+#if no GTS report we set CHECKGTS to 0 else stay at 1
 if [ "$FileName3" = "" ]
-then 
+then
 echo  "NO GTS Report"                                                           				| tee -a $FILE
 CHECKGTS=0
-else 
+else
 CHECKCORRECTREPORT  $FileName3
 fi
 
-#if no Verifier report we set CHECKGTS to 0 else stay at 1 
+#if no Verifier report we set CHECKGTS to 0 else stay at 1
 if ["$FileName4" = ""]
-then 
+then
 echo  "NO CTS VERIFIER Report"                                                           				| tee -a $FILE
 CHECKCTSV=0
 else
@@ -1323,7 +1357,7 @@ fi
 
 CTS "$FileName1"
 if ["$FileName2" = ""]
-then 
+then
 	echo ""
 else
 RETEST_CTS "$FileName2"
