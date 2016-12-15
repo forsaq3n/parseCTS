@@ -1,4 +1,5 @@
 #!/bin/bash
+#Created  by Javier de la Vega
 
 #########################
 # Unzip all files begin #
@@ -519,12 +520,12 @@ if [ $newNGTSReport -ne 0 ]
 then
 		locationGTS_N="./"$newNGTSReportDir"/PropertyDeviceInfo.deviceinfo.json"
 
-		CLIENTID=$(sed ':a;N;$!ba;s/\",\n/ /g' $locationGTS_N | grep "ro.com.google.clientidbase " | sed 's/.*value\": \"//' | sed 's/\"//' )
+		CLIENTID=$(sed ':a;N;$!ba;s/\",\n/ /g' $locationGTS_N | grep  -iw "ro.com.google.clientidbase " | sed 's/.*value\": \"//' | sed 's/\"//' )
 		echo $CLIENTID
-		sed ':a;N;$!ba;s/\",\n/ /g' $locationGTS_N | grep -iw "ro.com.google.clientidbase"  | sed 's/.*name\": \"ro/ro/' | sed 's/value\": \"/	:/' | sed 's/\"//' | sed 's/\"//'	| tee -a $FILE
+		sed ':a;N;$!ba;s/\",\n/ /g' $locationGTS_N | grep -w "ro.com.google.clientidbase"  | sed 's/.*name\": \"ro/ro/' | sed 's/value\": \"/	:/' | sed 's/\"//' | sed 's/\"//'	| tee -a $FILE
 		if [ -f /data/web/script/clientid.txt ]; then 
 
-			if  grep  -qir $CLIENTID $clientidtxt	  ; then
+			if  grep  -wqr $CLIENTID $clientidtxt	  ; then
 				echo "CLIENT ID  FOUND : " $CLIENTID												| tee -a $FILE
 				grep $CLIENTID $clientidtxt												| tee -a $FILE
 			else
@@ -536,11 +537,11 @@ then
 		fi
 
 else
-		grep -iw "ro.com.google.clientidbase" "$1"   |sed 's/.*ro.com.google.//' | sed 's/\"\ value//' | sed 's/\"//' |sed 's/\".*//'			| tee -a $FILE
+		grep -w "ro.com.google.clientidbase" "$1"   |sed 's/.*ro.com.google.//' | sed 's/\"\ value//' | sed 's/\"//' |sed 's/\".*//'			| tee -a $FILE
 		CLIENTID=$(grep -ir "ro.com.google.clientidbase\"" "$1"   |sed 's/.*value=\"//' | sed 's/\"//' |sed 's/\".*//' | sed 's/\/.*//')
 		if [ -f /data/web/script/clientid.txt ]; then 
 
-			if  grep  -qir $CLIENTID $clientidtxt	  ; then
+			if  grep  -wqr $CLIENTID $clientidtxt	  ; then
 				echo "CLIENT ID  FOUND : " $CLIENTID												| tee -a $FILE
 				grep $CLIENTID $clientidtxt												| tee -a $FILE
 			else
