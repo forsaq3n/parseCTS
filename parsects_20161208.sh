@@ -513,7 +513,7 @@ function CHECKCLIENTID(){
 
 echo "-----------------------------------------"														| tee -a $FILE
 echo "CLIENTID : "																						| tee -a $FILE
-
+clientidtxt='/data/web/script/clientid.txt'
 
 if [ $newNGTSReport -ne 0 ]
 then
@@ -524,12 +524,12 @@ then
 		sed ':a;N;$!ba;s/\",\n/ /g' $locationGTS_N | grep -iw "ro.com.google.clientidbase"  | sed 's/.*name\": \"ro/ro/' | sed 's/value\": \"/	:/' | sed 's/\"//' | sed 's/\"//'	| tee -a $FILE
 		if [ -f /data/web/script/clientid.txt ]; then 
 
-			if  grep  -q $CLIENTID /data/web/script/clientid.txt	  ; then
-				echo "CLIENT ID  FOUND : " "$1"												| tee -a $FILE
-				grep $CLIENTID /data/web/script/clientid.txt												| tee -a $FILE
+			if  grep  -qir $CLIENTID $clientidtxt	  ; then
+				echo "CLIENT ID  FOUND : " $CLIENTID												| tee -a $FILE
+				grep $CLIENTID $clientidtxt												| tee -a $FILE
 			else
-				echo "CLIENT ID NOT FOUND : "	"$1"										| tee -a $FILE
-				grep $CLIENTID /data/web/script/clientid.txt										| tee -a $FILE
+				echo "CLIENT ID NOT FOUND : "	$CLIENTID										| tee -a $FILE
+				grep $CLIENTID $clientidtxt										| tee -a $FILE
 			fi
 		else
 			echo "ClientID File does not exist"
@@ -540,12 +540,15 @@ else
 		CLIENTID=$(grep -ir "ro.com.google.clientidbase\"" "$1"   |sed 's/.*value=\"//' | sed 's/\"//' |sed 's/\".*//' | sed 's/\/.*//')
 		if [ -f /data/web/script/clientid.txt ]; then 
 
-			if  grep -wqri "$1" /data/web/script/clientid.txt
-			then
-				echo "CLIENT ID NOT FOUND : " "$1"												| tee -a $FILE
+			if  grep  -qir $CLIENTID $clientidtxt	  ; then
+				echo "CLIENT ID  FOUND : " $CLIENTID												| tee -a $FILE
+				grep $CLIENTID $clientidtxt												| tee -a $FILE
 			else
-				echo "CLIENT ID  FOUND : "	"$1"										| tee -a $FILE
+				echo "CLIENT ID NOT FOUND : "	$CLIENTID										| tee -a $FILE
+				grep $CLIENTID $clientidtxt										| tee -a $FILE
 			fi
+		else
+			echo "ClientID File does not exist"
 		fi
 fi
 echo "-----------------------------------------"														| tee -a $FILE
