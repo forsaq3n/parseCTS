@@ -300,9 +300,9 @@ echo "****************************First run failures****************************
 BASICCTSCHECK  "$1"
 
 CTS_DEVICEID=$(grep -ir "deviceID=\"" "$1"  |sed 's/.*deviceID=\"//'|  sed 's/\".*//' )
-CTS_FAILS=$(grep -ir "<Summary failed=\"" "$1"  |sed 's/.*<Summary failed="//'|  sed 's/\".*//')
+#CTS_FAILS=$(grep -ir "<Summary failed=\"" "$1"  |sed 's/.*<Summary failed="//'|  sed 's/\".*//')
 echo " "																								| tee -a $FILE
-FINGERPRINTS "$1" 
+FINGERPRINTS "$1" "CTS"
 }
 
 function RETEST_CTS(){
@@ -310,10 +310,9 @@ echo " "																								| tee -a $FILE
 echo "****************************Retest failures*******************************" | tee -a $FILE
 BASICCTSCHECK  "$1"
 
-FINGERPRINTS "$1" 
 #CTS_RETEST_DEVICEID=$(grep -ir "deviceID=\"" "$1"  |sed 's/.*deviceID=\"//'|  sed 's/\".*//' )
 echo " "																								| tee -a $FILE
-
+FINGERPRINTS "$1" "CTSR"
 }
 
 function GTS(){
@@ -344,22 +343,55 @@ function FINGERPRINTS(){
 
 locationGTS_N="./"$newNGTSReportDir"/PropertyDeviceInfo.deviceinfo.json"
 locationCTS_N="./"$newNCTSReportDir"/PropertyDeviceInfo.deviceinfo.json"
-if [ "$2" == "GTS" ]; then
-	location="$locationGTS_N"
-else
-	location="$locationCTS_N"
-fi
-
+echo "111111---->    "$1
+oldlocation=$1
+fingerprint_=""
 if [ $newNGTSReport -ne 0 ]
 then
+		
+		if [ "$2" == "GTS" ]; then
+			location="$locationGTS_N"
+			GTS_FINGERPRINT=$(sed ':a;N;$!ba;s/\",\n/ /g' $location | grep  "ro.build.fingerprint"  | sed 's/.*\"value\": \"//' | sed 's/\"//' )
+			echo "Fingerprint :  "  $GTS_FINGERPRINT | tee -a $FILE
+			fingerprint_=$GTS_FINGERPRINT
+		elif [ "$2" == "CTS" ]; then
+			location="$locationCTS_N"
+			CTS_FINGERPRINT=$(sed ':a;N;$!ba;s/\",\n/ /g' $location | grep  "ro.build.fingerprint"  | sed 's/.*\"value\": \"//' | sed 's/\"//' )
+			echo "Fingerprint :  "  $CTS_FINGERPRINT | tee -a $FILE
+			fingerprint_=$CTS_FINGERPRINT
+		else
+			#fingerprint="alps/full_k50v1_64_om/k50v1_64:7.0/NRD90M/1480308947:user/dev-keys"
+			CTS_VERIFIER_FINGERPRINT=" $(grep -ir "fingerprint=" "$1" | sed 's/.*fingerprint=\"//'| sed 's/ //' | sed 's/\".*//' )"
+			echo "Fingerprint aa:  "  $CTS_VERIFIER_FINGERPRINT | tee -a $FILE
+			fingerprint_=$CTS_VERIFIER_FINGERPRINT
+		fi
 
-		GTS_FINGERPRINT=$(sed ':a;N;$!ba;s/\",\n/ /g' $location | grep  "ro.build.fingerprint"  | sed 's/.*\"value\": \"//' | sed 's/\"//' )
-		echo "Fingerprint :  "  $GTS_FINGERPRINT | tee -a $FILE
+		
 	else
-		GTS_FINGERPRINT=" $(grep -ir "buildFingerprint=" "$1" | sed 's/.*buildFingerprint=\"//' | sed 's/\".*/ /')"
-		echo "Fingerprint :  "  $GTS_FINGERPRINT | tee -a $FILE
+		if [ "$2" == "GTS" ]; then
+			GTS_FINGERPRINT=" $(grep -ir "buildFingerprint=" $oldlocation | sed 's/.*buildFingerprint=\"//' | sed 's/\".*/ /')"
+			echo "Fingerprint :  "  $GTS_FINGERPRINT | tee -a $FILE
+			fingerprint_=$GTS_FINGERPRINT
+		elif [ "$2" == "CTS" ]; then
+			CTS_FINGERPRINT=" $(grep -ir " build_fingerprint=" $oldlocation | sed 's/.* build_fingerprint=\"//' | sed 's/\".*/ /')"
+			echo "Fingerprint :  "  $CTS_FINGERPRINT | tee -a $FILE
+			fingerprint_=$CTS_FINGERPRINT
+		elif [ "$2" == "CTSR" ]; then
+			CTS_RETEST_FINGERPRINT=" $(grep -ir " build_fingerprint=" $oldlocation | sed 's/.* build_fingerprint=\"//' | sed 's/\".*/ /')"
+			echo "Fingerprint :  "  $CTS_RETEST_FINGERPRINT | tee -a $FILE
+			fingerprint_=$CTS_RETEST_FINGERPRINT
+		elif [ "$2" == "CTSV" ]; then
+			CTS_VERIFIER_FINGERPRINT=" $(grep -ir " fingerprint=" "$oldlocation" | sed 's/.* fingerprint=\"//' | sed 's/\".*/ /')"
+			echo "Fingerprint :  "  $CTS_VERIFIER_FINGERPRINT | tee -a $FILE
+			fingerprint_=$CTS_VERIFIER_FINGERPRINT
+		
+			else
+			echo ""
+		fi
+
+#		"$CTS_FINGERPRINT" "$CTS_RETEST_FINGERPRINT" "$GTS_FINGERPRINT" "$CTS_VERIFIER_FINGERPRINT"
 fi
-CHECKFINGERPRINT $GTS_FINGERPRINT									| tee -a $FILE
+CHECKFINGERPRINT $fingerprint_								| tee -a $FILE
 
 }
 
@@ -385,7 +417,7 @@ function GTS_RESULT(){
 			echo  "GTS FAILS:"																						| tee -a $FILE
 #		<Test result="fail" name="testWidgetPresence">
 		checkfail="result=\"fail"
-		grep -ir "$checkfail" "$1"  		|sed 's/.*name=\"/	/'	| sed 's/\".*//'			| tee -a $FILE
+		grep -ir "$checkfail" "$1"  		|sed 's/.*name=\"/	/'	| sed 's/\".*//'	| sed 's/\"//' | sed 's/\"//'		| tee -a $FILE
 #		 <Summary pass="632" failed="10" not_executed="0" modules_done="60" modules_total="60" />
 			GTS_FAILS=$(grep -ir "<Summary pass=\"" "$1"  |sed 's/.*failed="//'|  sed 's/\".*//')
 			GTS_PASS=$(grep -ir "<Summary pass=\"" "$1"  |sed 's/.*pass="//'|  sed 's/\".*//')
@@ -401,7 +433,7 @@ function GTS_RESULT(){
 			echo " "																								| tee -a $FILE
 			echo  "GTS FAILS:"																						| tee -a $FILE
 			checkfail="result=\"fail"
-			grep -ir "$checkfail" "$1"  | grep starttime |sed 's/.*<Test name=/	/' | sed 's/result.*//'					| tee -a $FILE
+			grep -ir "$checkfail" "$1"  | grep starttime |sed 's/.*<Test name=/	/' | sed 's/result.*//'	| sed 's/\"//' | sed 's/\"//'				| tee -a $FILE
 			GTS_FAILS=$(grep -ir "<Summary failed=\"" "$1"  |sed 's/.*<Summary failed="//'|  sed 's/\".*//')
 			GTS_PASS=$(grep -ir "pass=\"" "$1"  |sed 's/.*pass="//'|  sed 's/\".*//')
 			GTS_NOTEXECUTED=$(grep -ir "notExecuted=\"" "$1"  |sed 's/.*notExecuted="//'|  sed 's/\".*//')
@@ -411,6 +443,7 @@ function GTS_RESULT(){
 			echo "Fails : "$GTS_FAILS									| tee -a $FILE
 			echo "Not Executed : "$GTS_NOTEXECUTED						| tee -a $FILE
 			grep -rniq "notExecuted\"" "$1"	| sed 's/.*<Test name="/	/' |  sed s/\".*// 		  | tee -a $FILE
+			echo " "																								| tee -a $FILE
 	fi
 
 
@@ -442,9 +475,9 @@ echo "CTS VERIFIER Not Executed:"																					| tee -a $FILE
 grep -ir "result=\"not-executed" "$1"  |sed s/.*'<test title="'/"	"/ |  sed s/\".*//     							| tee -a $FILE
 echo ""																												| tee -a $FILE
 #CTS_RETEST_DEVICEID=$(grep -ir "deviceID=\"" "$1"  | sed 's/.*deviceId=\"//'| sed 's/\".*//')
-CTS_VERIFIER_FINGERPRINT=" $(grep -ir "fingerprint=" "$1" | sed 's/.*fingerprint=\"//' | sed 's/\".*/ /')"
+#CTS_VERIFIER_FINGERPRINT=" $(grep -ir "fingerprint=" "$1" | sed 's/.*fingerprint=\"//' | sed 's/\".*/ /')"
 
-CHECKFINGERPRINT $CTS_VERIFIER_FINGERPRINT								| tee -a $FILE
+FINGERPRINTS "$1" "CTSV"
 }
 
 function GTSANDROIDFORORK(){
@@ -481,6 +514,7 @@ function CHECKCLIENTID(){
 echo "-----------------------------------------"														| tee -a $FILE
 echo "CLIENTID : "																						| tee -a $FILE
 
+
 if [ $newNGTSReport -ne 0 ]
 then
 		locationGTS_N="./"$newNGTSReportDir"/PropertyDeviceInfo.deviceinfo.json"
@@ -488,23 +522,31 @@ then
 		CLIENTID=$(sed ':a;N;$!ba;s/\",\n/ /g' $locationGTS_N | grep "ro.com.google.clientidbase " | sed 's/.*value\": \"//' | sed 's/\"//' )
 		echo $CLIENTID
 		sed ':a;N;$!ba;s/\",\n/ /g' $locationGTS_N | grep -iw "ro.com.google.clientidbase"  | sed 's/.*name\": \"ro/ro/' | sed 's/value\": \"/	:/' | sed 's/\"//' | sed 's/\"//'	| tee -a $FILE
-		if  grep  -q $CLIENTID /data/web/script/clientid.txt	  ; then
-			echo "CLIENT ID  FOUND : " "$1"												| tee -a $FILE
-			grep $CLIENTID /data/web/script/clientid.txt												| tee -a $FILE
+		if [ -f /data/web/script/clientid.txt ]; then 
+
+			if  grep  -q $CLIENTID /data/web/script/clientid.txt	  ; then
+				echo "CLIENT ID  FOUND : " "$1"												| tee -a $FILE
+				grep $CLIENTID /data/web/script/clientid.txt												| tee -a $FILE
+			else
+				echo "CLIENT ID NOT FOUND : "	"$1"										| tee -a $FILE
+				grep $CLIENTID /data/web/script/clientid.txt										| tee -a $FILE
+			fi
 		else
-			echo "CLIENT ID NOT FOUND : "	"$1"										| tee -a $FILE
-			grep $CLIENTID /data/web/script/clientid.txt										| tee -a $FILE
+			echo "ClientID File does not exist"
 		fi
 
 else
 		grep -iw "ro.com.google.clientidbase" "$1"   |sed 's/.*ro.com.google.//' | sed 's/\"\ value//' | sed 's/\"//' |sed 's/\".*//'			| tee -a $FILE
 		CLIENTID=$(grep -ir "ro.com.google.clientidbase\"" "$1"   |sed 's/.*value=\"//' | sed 's/\"//' |sed 's/\".*//' | sed 's/\/.*//')
-		if  grep -wqri "$1" /data/web/script/clientid.txt
-		then
-			echo "CLIENT ID NOT FOUND : " "$1"												| tee -a $FILE
-		else
-			echo "CLIENT ID  FOUND : "	"$1"										| tee -a $FILE
-fi
+		if [ -f /data/web/script/clientid.txt ]; then 
+
+			if  grep -wqri "$1" /data/web/script/clientid.txt
+			then
+				echo "CLIENT ID NOT FOUND : " "$1"												| tee -a $FILE
+			else
+				echo "CLIENT ID  FOUND : "	"$1"										| tee -a $FILE
+			fi
+		fi
 fi
 echo "-----------------------------------------"														| tee -a $FILE
 
@@ -671,7 +713,7 @@ checkfail="result=\"notExecuted"
 grep -ir "$checkfail" "$1"  | grep starttime |sed 's/.*<Test name=/		/' | sed 's/result.*//'					| tee -a $FILE
 RAN_TEST=$((CTS_RETEST_PASS+CTS_RETEST_FAILS))
 
-echo "	RAN_TEST    " $RAN_TEST					| tee -a $FILE
+echo "RAN_TEST    " $RAN_TEST					| tee -a $FILE
 if [  "$TOTAL_RETEST" -ne "$RAN_TEST" ]
 	then
 		echo "		This report  Full and retest do not match retest again "					| tee -a $FILE
@@ -920,23 +962,31 @@ full="$1"
 retest="$2"
 gts="$3"
 verfier="$4"
-echo
+verfier=$(echo "$4" | sed 's/ //' )
 echo " DEVICE FINGERPRINT "													| tee -a $FILE
-if [ "$retest" == "" ]; then
-	retest="$1"
+if [ z $retest ]; then
+	retest="$full"
+	echo " compare no retest"
+	echo "full :"$full
+	echo "retest :"$retest
+	echo "gts :"$gts
+	echo "verifier :"$verfier 
 fi
-if  [ "$full" == "$retest" ]; then
-	if [ "$full" == "$gts" ];then
-		if [ "$full" == "$verfier" ]; then
+if  [[ "$full" == *"$retest"* ]]; then
+	if [[ "$full" == *"$gts"* ]];then
+		if [[ "$full" == *"$verfier"* ]]; then
 			echo "	SAME FINGERPTINT" "$1"										| tee -a $FILE
 			CHECKFINGERPRINT	"$full"												| tee -a $FILE
 		else
+			echo "1"
 			echo " DIFFERENT FINGERPRINT"										| tee -a $FILE
 		fi
 	else
+		echo "2"
 		echo " DIFFERENT FINGERPRINT"											| tee -a $FILE
 	fi
 else
+	echo "3"
 	echo " DIFFERENT FINGERPRINT"												| tee -a $FILE
 fi
 #acme/myproduct/mydevice:6.0/LMYXX/3359:userdebug/test-keys
@@ -952,7 +1002,7 @@ then
 	echo "This SW fingerpint is engineer, userdebug, or contains test/dev keys"					| tee -a $FILE
 	echo "***********************************************************************"						| tee -a $FILE
 else
-	echo ""																| tee -a $FILE
+	echo ""																
 fi
 brand=$(grep "release" fingerprint.txt| sed 's/\/.*//')
 echo "Brand: "$brand													| tee -a $FILE
@@ -1343,10 +1393,10 @@ CHECKCORRECTREPORT  "$FileName1"
 
 if ["$FileName2" = ""]
 then
-
+echo "No retest"
 CHECKCORRECTREPORT  "$FileName1"
 else
-
+echo "have retest"
 CHECKCORRECTREPORT  "$FileName2"
 fi
 
@@ -1408,6 +1458,11 @@ if  [ $CHECKCTSV -ne 1 ] || [ $CHECKCTSV -ne 1 ]
 then
 echo  "Single report check"                                                           				| tee -a $FILE
 else
+	echo "cts :" $CTS_FINGERPRINT
+	echo "cts retest:" $CTS_RETEST_FINGERPRINT
+	echo "gts :" $GTS_FINGERPRINT
+	echo "ctsv :" $CTS_VERIFIER_FINGERPRINT
+
 COMPAREFINGERPRINT  "$CTS_FINGERPRINT" "$CTS_RETEST_FINGERPRINT" "$GTS_FINGERPRINT" "$CTS_VERIFIER_FINGERPRINT"
 fi
 
