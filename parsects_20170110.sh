@@ -689,7 +689,7 @@ echo " "																								| tee -a $FILE
 
 	echo " "																								| tee -a $FILE
 	echo "      CHECK HERE FOR Telephony"																								| tee -a $FILE
-	telephonyPresent="Telephony feature present :  Telephony, CDMA, GMS"
+	telephonyPresent="Telephony feature present"
 	telephony=$(grep -ir "android.hardware.telephony" "$1"  | sed 's/.*available="//'|  sed 's/\".*//')
 	echo $telephonyPresent "=" $telephony														| tee -a $FILE
 
